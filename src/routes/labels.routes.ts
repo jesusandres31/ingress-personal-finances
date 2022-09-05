@@ -3,14 +3,14 @@ import { labelsCtrl } from '../controllers';
 
 const router = Router();
 
-/**
- * get all labels
- */
+router.post('/labels', labelsCtrl.createLabel);
+
 router.get('/labels', labelsCtrl.getLabels);
 
-/**
- * get one label
- */
 router.get('/labels/:uuid', labelsCtrl.getLabelByUuid);
+
+router.put('/labels/:uuid', labelsCtrl.updateLabelByUuid);
+
+router.delete('/labels/:uuid', labelsCtrl.deleteLabelByUuid);
 
 export default router;

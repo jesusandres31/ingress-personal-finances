@@ -1,7 +1,19 @@
-import { db } from '../database';
+import { db, qrm } from '../database';
 import { ILabel } from '../interfaces';
 
 class LabelsSvcs {
+  /**
+   * create label
+   */
+  public createLabel = async (data: ILabel): Promise<ILabel> => {
+    const label: ILabel[] = await db.func(
+      'setup.labels_create',
+      [data.name],
+      qrm.any,
+    );
+    return label[0];
+  };
+
   /**
    * get all labels
    */
@@ -12,30 +24,39 @@ class LabelsSvcs {
     sortColumn: string,
     sortDirection: string,
   ): Promise<ILabel[]> => {
-    return db.any(
-      `
-        SELECT l.uuid, l.name
-        FROM setup.labels AS l
-        WHERE (LOWER(l.name) LIKE LOWER('%' || $1 || '%'))
-        ORDER BY l.$4~ $5#
-        LIMIT $2 OFFSET ($3 - 1) * $2;
-      `,
-      [filter, limit, offset, sortColumn, sortDirection],
-    );
+    return db.func('setup.labels_get_all', [
+      offset,
+      limit,
+      filter,
+      sortColumn,
+      sortDirection,
+    ]);
   };
 
   /**
    * get one label
    */
   public getLabelByUuid = (uuid: string): Promise<ILabel> => {
-    return db.one(
-      `
-        SELECT l.uuid, l.name
-        FROM setup.labels AS l 
-        WHERE uuid = $1;
-      `,
-      [uuid],
+    return db.func('setup.labels_get_one_by_uuid', [uuid], qrm.one);
+  };
+
+  /**
+   * update label
+   */
+  public updateLabelByUuid = async (data: ILabel): Promise<ILabel> => {
+    const taxpayer: ILabel[] = await db.func(
+      'setup.labels_update',
+      [data.name],
+      qrm.any,
     );
+    return taxpayer[0];
+  };
+
+  /**
+   * delete label
+   */
+  public deleteLabelByUuid = (uuid: string): Promise<ILabel> => {
+    return db.func('setup.labels_delete', [uuid], qrm.one);
   };
 }
 

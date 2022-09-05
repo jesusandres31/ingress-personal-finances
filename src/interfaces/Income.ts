@@ -2,7 +2,7 @@ export interface IIncome {
   id: number;
   uuid: string;
   date: string;
-  label: string;
+  labelId: string;
   description: string;
   total: number;
 }
